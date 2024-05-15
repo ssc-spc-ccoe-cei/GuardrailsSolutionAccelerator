@@ -107,6 +107,7 @@ module LAW 'modules/loganalyticsworkspace.bicep' = if ((deployLAW && newDeployme
     rg: rg
     deployLAW: deployLAW
     subscriptionId: subscription().subscriptionId
+    Locale: Locale
     GRDocsBaseUrl: GRDocsBaseUrl
     newDeployment: newDeployment
     updateWorkbook: updateWorkbook

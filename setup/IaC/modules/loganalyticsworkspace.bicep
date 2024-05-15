@@ -2,6 +2,7 @@ param subscriptionId string
 param rg string
 param logAnalyticsWorkspaceName  string
 param location  string
+param Locale string 
 param releaseVersion  string
 param releaseDate string
 param deployLAW bool
@@ -36,7 +37,7 @@ resource f2 'Microsoft.OperationalInsights/workspaces/savedSearches@2020-08-01' 
     etag: '*'
     category: 'gr_functions'
     displayName: 'gr_data'
-    query: 'let itsgcodes=GRITSGControls_CL | summarize arg_max(TimeGenerated, *) by itsgcode_s;\nGuardrailsCompliance_CL\n| where ControlName_s has ctrlprefix and ReportTime_s == ReportTime and Required_s != tostring(showNonRequired)\n| where TimeGenerated > ago (24h)\n|join kind=inner (itsgcodes) on itsgcode_s\n| project ItemName=strcat(ItemName_s, iff(Required_s=="False"," (R)", " (M)")), Comments=Comments_s, Status=iif(tostring(ComplianceStatus_b)=="True", \'✔️ \', \'❌ \'),["ITSG Control"]=itsgcode_s, Mitigation=gr_geturl(replace_string(ctrlprefix," ",""),itsgcode_s)'
+    query: 'let itsgcodes=GRITSGControls_CL | summarize arg_max(TimeGenerated, *) by itsgcode_s;\nGuardrailsCompliance_CL\n| where ControlName_s has ctrlprefix and ReportTime_s == ReportTime and Required_s != tostring(showNonRequired)\n| where TimeGenerated > ago (24h)\n|join kind=inner (itsgcodes) on itsgcode_s\n| project-rename\n  iff("${Locale}" == "en-CA",  ItemName=strcat(ItemName_s, iff(Required_s=="False"," (R)", " (M)")), Comments=Comments_s, Status=iif(tostring(ComplianceStatus_b)=="True", \'✔️ \', \'❌ \'),["ITSG Control"]=itsgcode_s, Mitigation=gr_geturl(replace_string(ctrlprefix," ",""),itsgcode_s)), iff("${Locale}) == "fr-CA", ["Nom de l article"]=strcat(ItemName_s, iff(Required_s=="False"," (R)", " (M)")), Commentaires=Comments_s, Statut=iif(tostring(ComplianceStatus_b)=="True", \'✔️ \', \'❌ \'),["Contrôle ITSG"]=itsgcode_s, Atténuation=gr_geturl(replace_string(ctrlprefix," ",""),itsgcode_s)'
     functionAlias: 'gr_data'
     functionParameters: 'ctrlprefix:string, ReportTime:string, showNonRequired:string'
     version: 2

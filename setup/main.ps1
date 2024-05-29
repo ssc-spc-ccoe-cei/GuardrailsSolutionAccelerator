@@ -50,6 +50,8 @@ Else {
 
     # manually import localization module due to directory structure
     Import-Module ../src/Guardrails-Localization/GR-ComplianceChecks.psd1
+    
+    Import-Module ..\src\GuardRails-Localization\GR-ComplianceChecks-ItemName.ps1
 
     # install marketplace module
     Install-Module -Name Az.Marketplace -Scope CurrentUser 
@@ -89,7 +91,7 @@ $StorageAccountName = Get-GSAAutomationVariable -Name "StorageAccountName"
 $Locale = Get-GSAAutomationVariable -Name "GuardRailsLocale"
 
 If ($Locale -eq $null) {
-    $Locale = "en-CA"
+    $Locale = "fr-CA"
 }
 
 try {
@@ -196,6 +198,15 @@ foreach ($module in $modules) {
             #Write-Output "required: $($module.Required)."
             $results.ComplianceResults | Add-Member -MemberType Noteproperty -Name "Required" -Value $module.Required
             #"Results Required: $($results.ComplianceResults.Required)"
+            $newResults = [PSCustomObject]@{}
+
+            if ($Locale -eq "fr-CA"){
+                $newResults = Translate_ComplianceResults -ComplianceResults $results.ComplianceResults -Translations $frenchTranslations
+            }
+            else{
+                $newResults = $results.ComplianceResults
+            }
+
             New-LogAnalyticsData -Data $results.ComplianceResults -WorkSpaceID $WorkSpaceID -WorkSpaceKey $WorkspaceKey -LogType $LogType | Out-Null
             if ($null -ne $results.Errors) {
                 "Module $($module.modulename) failed with $($results.Errors.count) errors."

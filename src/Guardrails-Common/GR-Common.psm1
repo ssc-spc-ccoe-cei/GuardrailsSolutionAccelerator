@@ -741,6 +741,24 @@ function Hide-Email {
     }
 }
 
+function Translate_ComplianceResults {
+    param (
+        [PSCustomObject]$ComplianceResults,
+        [hashtable]$Translations
+    )
+    $TranslatedResults = [PSCustomObject]@{}
+
+    foreach ($property in $ComplianceResults.PSObject.Properties) {
+        $translatedName = $Translations[$property.Name]
+        if($translatedName){
+            $TranslatedResults | Add-Member -MemberType NoteProperty -Name $translatedName -Value $property.Value
+        } else {
+            $TranslatedResults | Add-Member -MemberType NoteProperty -Name $property.Name -Value $property.Value
+        }
+    }
+    return $TranslatedResults
+}
+
 function Parse-BlobContent {
     param (
         [string]$blobContent

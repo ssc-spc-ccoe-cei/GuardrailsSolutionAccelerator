@@ -2,7 +2,7 @@ name: Deploy to Dev environment upon Release
 
 on:
   push:
-    branches:
+    branches: 
       - itemName_french_aalvi
 
 permissions:

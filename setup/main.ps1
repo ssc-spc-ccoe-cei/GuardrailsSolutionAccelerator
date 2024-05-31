@@ -200,14 +200,21 @@ foreach ($module in $modules) {
             #"Results Required: $($results.ComplianceResults.Required)"
             $newResults = [PSCustomObject]@{}
 
+            
+
             if ($Locale -eq "fr-CA"){
                 $newResults = Translate_ComplianceResults -ComplianceResults $results.ComplianceResults -Translations $frenchTranslations
             }
             else{
                 $newResults = $results.ComplianceResults
             }
-
-            New-LogAnalyticsData -Data $newResults -WorkSpaceID $WorkSpaceID -WorkSpaceKey $WorkspaceKey -LogType $LogType | Out-Null
+            
+            if ($null -ne $newResults){
+                New-LogAnalyticsData -Data $newResults -WorkSpaceID $WorkSpaceID -WorkSpaceKey $WorkspaceKey -LogType $LogType | Out-Null
+            }
+            else{
+                New-LogAnalyticsData -Data $results.ComplianceResults -WorkSpaceID $WorkSpaceID -WorkSpaceKey $WorkspaceKey -LogType $LogType | Out-Null
+            }
             if ($null -ne $results.Errors) {
                 "Module $($module.modulename) failed with $($results.Errors.count) errors."
                 New-LogAnalyticsData -Data $results.errors -WorkSpaceID $WorkSpaceID -WorkSpaceKey $WorkspaceKey -LogType "GuardrailsComplianceException" | Out-Null

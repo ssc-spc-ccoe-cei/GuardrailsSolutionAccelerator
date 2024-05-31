@@ -207,7 +207,7 @@ foreach ($module in $modules) {
                 $newResults = $results.ComplianceResults
             }
 
-            New-LogAnalyticsData -Data $results.ComplianceResults -WorkSpaceID $WorkSpaceID -WorkSpaceKey $WorkspaceKey -LogType $LogType | Out-Null
+            New-LogAnalyticsData -Data $newResults -WorkSpaceID $WorkSpaceID -WorkSpaceKey $WorkspaceKey -LogType $LogType | Out-Null
             if ($null -ne $results.Errors) {
                 "Module $($module.modulename) failed with $($results.Errors.count) errors."
                 New-LogAnalyticsData -Data $results.errors -WorkSpaceID $WorkSpaceID -WorkSpaceKey $WorkspaceKey -LogType "GuardrailsComplianceException" | Out-Null

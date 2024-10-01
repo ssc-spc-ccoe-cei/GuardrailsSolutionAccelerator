@@ -288,8 +288,8 @@ jobs:
 
                         Write-Host "Successfully logged in to Azure with OIDC token."
 
-                        # Sleep for 4 minutes
-                        Start-Sleep -Seconds 240
+                        # Sleep for 3 minutes
+                        Start-Sleep -Seconds 180
                     } catch {
                         Write-Error "An error occurred while fetching or using the OIDC token: $_"
                     }

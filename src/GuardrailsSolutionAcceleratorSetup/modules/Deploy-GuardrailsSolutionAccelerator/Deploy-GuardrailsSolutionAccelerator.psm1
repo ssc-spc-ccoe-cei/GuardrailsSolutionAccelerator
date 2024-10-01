@@ -450,7 +450,13 @@ Function Deploy-GuardrailsSolutionAccelerator {
                     
                     # Refresh token
                     try {
-                        Connect-AzAccount -ErrorAction Stop
+                        Write-Verbose "Refreshing Azure CLI token..."
+                        $null = az account get-access-token --output none
+                        Write-Verbose "Token refreshed. Updating Azure PowerShell context..."
+                        $azContext = Get-AzContext
+                        $null = Clear-AzContext -Scope Process
+                        $null = Set-AzContext -Context $azContext
+
                     }
                     catch {
                         Write-Error "Failed to refresh token: $_"

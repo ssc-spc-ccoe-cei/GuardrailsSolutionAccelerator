@@ -150,8 +150,10 @@ jobs:
       - name: Check Azure CLI version
         run: az --version
       - name: Check Powershell version
+        shell: pwsh
         run: $PSVersionTable
       - name: Check Azure PowerShell module version
+        shell: pwsh
         run: |
           Get-Module -ListAvailable -Name Az | Select-Object Name, Version        
       - name: Download zipped modules and replace old ones

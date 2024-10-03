@@ -150,7 +150,7 @@ jobs:
       - name: Check Azure CLI version
         run: az --version
       - name: Check Powershell version
-        run: pwsh -Command "$PSVersionTable.PSVersion"
+        run: pwsh -Command "$PSVersionTable"
       - name: Check Azure PowerShell module version
         run: |
           pwsh -Command "Get-Module -ListAvailable -Name Az | Select-Object Name, Version"        

@@ -167,8 +167,7 @@ jobs:
       - name: Check Azure PowerShell module version
         shell: pwsh
         run: |
-          $module = Get-Module -ListAvailable -Name Az | Select-Object Name, Version
-          write-output $module       
+          Get-Module -ListAvailable | Select-Object Name, Version      
       - name: Download zipped modules and replace old ones
         uses: actions/download-artifact@v4
         with:
@@ -321,7 +320,8 @@ jobs:
           azPSVersion: "latest" 
       - name: Deploy Test environment
         run: |
-            Get-Module -ListAvailable 
+            $env:PSModulePath += ":/usr/share/az_12.1.0"
+            Get-Module -ListAvailable  | FT Name, Version
             Set-AzContext -SubscriptionId $env:TESTSUBSCRIPTION_ID
             $configFilePath = Join-Path -Path $env:GITHUB_WORKSPACE -ChildPath 'config.json'
             $CBSSUBSCRIPTION_NAME = $env:CBSSUBSCRIPTION_NAME

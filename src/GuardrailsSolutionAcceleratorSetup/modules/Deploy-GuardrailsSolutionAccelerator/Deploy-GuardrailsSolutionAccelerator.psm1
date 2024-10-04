@@ -433,47 +433,48 @@ Function Deploy-GuardrailsSolutionAccelerator {
         }
 
         $secretValue = (ConvertTo-SecureString -String (ConvertTo-Json $config -Depth 10) -AsPlainText -Force)
+        Set-AzKeyVaultSecret -VaultName $config['runtime']['keyVaultName'] -Name $configSecretName -SecretValue $secretValue -Tag $secretTags -ContentType 'application/json' -Verbose:$useVerbose | Out-Null
 
-        $maxRetries = 3
-        $retryCount = 0
-        $success = $false
+        # $maxRetries = 3
+        # $retryCount = 0
+        # $success = $false
 
-        while (-not $success -and $retryCount -lt $maxRetries) {
-            try {
-                Set-AzKeyVaultSecret -VaultName $config['runtime']['keyVaultName'] -Name $configSecretName -SecretValue $secretValue -Tag $secretTags -ContentType 'application/json' -Verbose:$useVerbose -ErrorAction Stop
-                $success = $true
-            }
-            catch {
-                if ($_.Exception.Message -like "*AADSTS700024: Client assertion is not within its valid time range*") {
-                    $retryCount++
-                    Write-Warning "Token expired. Attempting to refresh token and retry. Attempt $retryCount of $maxRetries."
+        # while (-not $success -and $retryCount -lt $maxRetries) {
+        #     try {
+        #         Set-AzKeyVaultSecret -VaultName $config['runtime']['keyVaultName'] -Name $configSecretName -SecretValue $secretValue -Tag $secretTags -ContentType 'application/json' -Verbose:$useVerbose -ErrorAction Stop
+        #         $success = $true
+        #     }
+        #     catch {
+        #         if ($_.Exception.Message -like "*AADSTS700024: Client assertion is not within its valid time range*") {
+        #             $retryCount++
+        #             Write-Warning "Token expired. Attempting to refresh token and retry. Attempt $retryCount of $maxRetries."
                     
-                    # Refresh token
-                    try {
-                        Write-Verbose "Refreshing Azure CLI token..."
-                        $null = az account get-access-token --output none
-                        Write-Verbose "Token refreshed. Updating Azure PowerShell context..."
-                        $azContext = Get-AzContext
-                        $null = Clear-AzContext -Scope Process
-                        $null = Set-AzContext -Context $azContext
+        #             # Refresh token
+        #             try {
+        #                 Write-Verbose "Refreshing Azure CLI token..."
+        #                 $null = az account get-access-token --output none
+        #                 Write-Verbose "Token refreshed. Updating Azure PowerShell context..."
+        #                 $azContext = Get-AzContext
+        #                 $null = Clear-AzContext -Scope Process
+        #                 $null = Set-AzContext -Context $azContext
 
-                    }
-                    catch {
-                        Write-Error "Failed to refresh token: $_"
-                        throw
-                    }
-                }
-                else {
-                    Write-Error "Failed to set KeyVault secret: $_"
-                    throw
-                }
-            }
-        }
+        #             }
+        #             catch {
+        #                 Write-Error "Failed to refresh token: $_"
+        #                 throw
+        #             }
+        #         }
+        #         else {
+        #             Write-Error "Failed to set KeyVault secret: $_"
+        #             throw
+        #         }
+        #     }
+        # }
 
-        if (-not $success) {
-            Write-Error "Failed to set KeyVault secret after $maxRetries attempts."
-            throw "Failed to set KeyVault secret after multiple attempts."
-        }
+        # if (-not $success) {
+        #     Write-Error "Failed to set KeyVault secret after $maxRetries attempts."
+        #     throw "Failed to set KeyVault secret after multiple attempts."
+        # }
 
         Write-Host "Completed deployment of the Guardrails Solution Accelerator!" -ForegroundColor Green
     }

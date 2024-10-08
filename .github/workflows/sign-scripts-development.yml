@@ -23,7 +23,7 @@ env:
 
 jobs:
   sign_and_publish_scripts:
-    name: Sign, validate, test and publish PowerShell scripts as pipeline artifacts
+    name: Test and publish PowerShell scripts as pipeline artifacts
     runs-on: windows-2019
     environment: test
     steps:
